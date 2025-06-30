@@ -1,3 +1,5 @@
+use std::os::unix::net::SocketAddr;
+
 use axum::{
     debug_handler,
     extract::Query,
@@ -14,9 +16,10 @@ async fn main() {
         .route("/", get(main_page));
     println!("Hello, world!");
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
-        .await
-        .unwrap();
+    let port = std::env::var("PORT").unwrap_or("3000".into());
+    let address = format!("0.0.0.0:{}", port);
+
+    let listener = tokio::net::TcpListener::bind(address).await.unwrap();
 
     axum::serve(listener, app).await.unwrap();
 }
