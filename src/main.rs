@@ -1,10 +1,17 @@
-use axum::{debug_handler, extract::Query, routing::post, Router};
+use axum::{
+    debug_handler,
+    extract::Query,
+    routing::{get, post},
+    Router,
+};
 use serde::{Deserialize, Serialize};
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::{native_token::LAMPORTS_PER_SOL, pubkey::Pubkey};
 #[tokio::main]
 async fn main() {
-    let app = Router::new().route("/fetch-balance", post(fetch_balance));
+    let app = Router::new()
+        .route("/fetch-balance", post(fetch_balance))
+        .route("/", get(main_page));
     println!("Hello, world!");
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
@@ -17,6 +24,12 @@ async fn main() {
 #[derive(Debug, Serialize, Deserialize)]
 struct Address {
     address: String,
+}
+
+#[debug_handler]
+async fn main_page() -> String {
+    println!("Got / request");
+    "Hello world".to_owned()
 }
 
 #[debug_handler]
